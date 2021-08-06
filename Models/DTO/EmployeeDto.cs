@@ -14,5 +14,7 @@ namespace FirmaRest.Models
         public string Email { get; set; }
         public string Contact { get; set; }
         public int? CompanyId { get; set; }
+
+        
     }
 }
