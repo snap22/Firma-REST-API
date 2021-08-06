@@ -47,6 +47,7 @@ namespace FirmaRest
 
             // Pridanie repozitarov
             services.AddScoped<IEmployeeRepository,EmployeeRepository>();
+            services.AddScoped<INodeRepository, NodeRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
