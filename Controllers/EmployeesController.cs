@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FirmaRest.Models;
+using FirmaRest.Repository;
 
 namespace FirmaRest.Controllers
 {
@@ -13,26 +14,26 @@ namespace FirmaRest.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-        private readonly TestDBContext _context;
+        
+        private readonly IEmployeeRepository _repository;
 
-        public EmployeesController(TestDBContext context)
+        public EmployeesController(IEmployeeRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: api/Employees
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
+        public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployees()
         {
-            return await _context.Employees
-                .ToListAsync();
+            return await _repository.GetAllEmployees();
         }
 
         // GET: api/Employees/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Employee>> GetEmployee(int id)
+        public async Task<ActionResult<EmployeeDto>> GetEmployee(int id)
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await _repository.GetEmployeeById(id);
 
             if (employee == null)
             {
@@ -42,34 +43,48 @@ namespace FirmaRest.Controllers
             return employee;
         }
 
+        // GET: api/Employees/Unemployed
+        [HttpGet]
+        [Route("Unemployed")]
+        public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetUnemployedEmployees()
+        {
+            return await _repository.GetUnemployed();
+        }
+
         // PUT: api/Employees/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmployee(int id, Employee employee)
+        public async Task<IActionResult> PutEmployee(int id, EmployeeDto employeeDto)
         {
-            if (id != employee.Id)
+            if (id != employeeDto.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(employee).State = EntityState.Modified;
+            var employee = await _repository.GetEmployeeById(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _repository.UpdateEmployee(id, employeeDto);
+
+            //try
+            //{
+            //    await _context.SaveChangesAsync();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    if (!EmployeeExists(id))
+            //    {
+            //        return NotFound();
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
 
             return NoContent();
         }
@@ -78,36 +93,37 @@ namespace FirmaRest.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
+        public async Task<ActionResult<EmployeeDto>> PostEmployee(EmployeeDto employeeDto)
         {
-            _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
+
+            var employee = await _repository.CreateEmployee(employeeDto);
+
 
             //return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
-            return CreatedAtAction(nameof(GetEmployee), new { id = employee.Id }, employee);
+            return CreatedAtAction(nameof(GetEmployee), new { id = employee.Value.Id }, employee);
         }
 
         // DELETE: api/Employees/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Employee>> DeleteEmployee(int id)
+        public async Task<ActionResult<EmployeeDto>> DeleteEmployee(int id)
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await _repository.GetEmployeeById(id);
             if (employee == null)
             {
                 return NotFound();
             }
 
-            _context.Employees.Remove(employee);
-            await _context.SaveChangesAsync();
+            var deletedEmployee = await _repository.DeleteEmployee(id);
 
-            return employee;
+            return deletedEmployee;
         }
 
-        private bool EmployeeExists(int id)
-        {
-            return _context.Employees.Any(e => e.Id == id);
-        }
+        
 
-       
+        
+
+        
+
+
     }
 }
