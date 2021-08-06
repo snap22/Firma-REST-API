@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 
 namespace FirmaRest.Models.DTO
 {
-    public class CompanyDto
+    public class DepartmentDto
     {
         public int Id { get; set; }
         public string Title { get; set; }
         public string Code { get; set; }
-        public int Director { get; set; }
+        public int Leader { get; set; }
+        public int ProjectId { get; set; }
     }
 }
