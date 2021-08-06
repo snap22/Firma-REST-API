@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using FirmaRest.Models;
+using FirmaRest.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,8 +30,23 @@ namespace FirmaRest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            // Pridanie swaggera
             services.AddSwaggerGen();
+
+            // Pridanie databazy
             services.AddDbContext<TestDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Scaffolded")));
+
+            // Pridanie AutoMappera
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
+            // Pridanie repozitarov
+            services.AddScoped<EmployeeRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,7 +71,7 @@ namespace FirmaRest
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Company REST API");
                 c.RoutePrefix = string.Empty; 
             });
         }
