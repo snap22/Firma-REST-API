@@ -26,30 +26,51 @@ namespace FirmaRest.Repository
                 .Select(e => _mapper.Map<EmployeeDto>(e))
                 .ToListAsync();
         }
-        public Task<ActionResult<EmployeeDto>> GetEmployeeById(int id)
+        public async Task<ActionResult<EmployeeDto>> GetEmployeeById(int id)
         {
-            throw new NotImplementedException();
+            var employee = await _context.Employees.FindAsync(id);
+            return _mapper.Map<EmployeeDto>(employee);
         }
-        public Task<ActionResult<IEnumerable<EmployeeDto>>> GetUnemployed()
+        public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetUnemployed()
         {
-            throw new NotImplementedException();
+            return await _context.Employees
+                .Where(e => e.CompanyId == null)
+                .Select(e => _mapper.Map<EmployeeDto>(e))    // skonvertovat az pred ToList !
+                .ToListAsync();
         }
-        public Task<ActionResult<EmployeeDto>> CreateEmployee(EmployeeDto employeeDto)
+        public async Task<ActionResult<EmployeeDto>> CreateEmployee(EmployeeDto employeeDto)
         {
-            throw new NotImplementedException();
+            var employee = _mapper.Map<Employee>(employeeDto);
+
+            _context.Employees.Add(employee);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<EmployeeDto>(employee);
         }
-        public Task<IActionResult> UpdateEmployee(int id, EmployeeDto employeeDto)
+        public async Task<ActionResult<EmployeeDto>> UpdateEmployee(int id, EmployeeDto employeeDto)
         {
-            throw new NotImplementedException();
+            var employee = await _context.Employees.FindAsync(id);
+
+            _mapper.Map(employeeDto, employee);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<EmployeeDto>(employee);
         }
-        public Task<ActionResult<EmployeeDto>> DeleteEmployee(int id)
+        public async Task<ActionResult<EmployeeDto>> DeleteEmployee(int id)
         {
-            throw new NotImplementedException();
+            var employee = await _context.Employees.FindAsync(id);
+
+            _context.Employees.Remove(employee);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<EmployeeDto>(employee);
         }
         public bool CheckIfEmployeeExists(int id)
         {
-            throw new NotImplementedException();
+            return _context.Employees.Any(e => e.Id == id);
         }
+
+        
 
 
 

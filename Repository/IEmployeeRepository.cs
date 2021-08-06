@@ -13,7 +13,7 @@ namespace FirmaRest.Repository
         public Task<ActionResult<EmployeeDto>> GetEmployeeById(int id);
         public Task<ActionResult<IEnumerable<EmployeeDto>>> GetUnemployed();
         public Task<ActionResult<EmployeeDto>> CreateEmployee(EmployeeDto employeeDto);
-        public Task<IActionResult> UpdateEmployee(int id, EmployeeDto employeeDto);
+        public Task<ActionResult<EmployeeDto>> UpdateEmployee(int id, EmployeeDto employeeDto);
         public Task<ActionResult<EmployeeDto>> DeleteEmployee(int id);
         public bool CheckIfEmployeeExists(int id);
 
