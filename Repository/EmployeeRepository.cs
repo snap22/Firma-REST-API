@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FirmaRest.Models;
+using FirmaRest.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -41,10 +42,10 @@ namespace FirmaRest.Repository
         public async Task<ActionResult<EmployeeDto>> CreateEmployee(EmployeeDto employeeDto)
         {
             var employee = _mapper.Map<Employee>(employeeDto);
-
+            
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
-
+            
             return _mapper.Map<EmployeeDto>(employee);
         }
         public async Task<ActionResult<EmployeeDto>> UpdateEmployee(int id, EmployeeDto employeeDto)
@@ -65,15 +66,6 @@ namespace FirmaRest.Repository
 
             return _mapper.Map<EmployeeDto>(employee);
         }
-        public bool CheckIfEmployeeExists(int id)
-        {
-            return _context.Employees.Any(e => e.Id == id);
-        }
-
-        
-
-
-
 
     }
 }

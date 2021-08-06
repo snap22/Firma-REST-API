@@ -1,4 +1,5 @@
 ﻿using FirmaRest.Models;
+using FirmaRest.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,6 @@ namespace FirmaRest.Repository
         public Task<ActionResult<EmployeeDto>> CreateEmployee(EmployeeDto employeeDto);
         public Task<ActionResult<EmployeeDto>> UpdateEmployee(int id, EmployeeDto employeeDto);
         public Task<ActionResult<EmployeeDto>> DeleteEmployee(int id);
-        public bool CheckIfEmployeeExists(int id);
 
     }
 }
