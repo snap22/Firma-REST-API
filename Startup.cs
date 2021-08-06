@@ -46,7 +46,7 @@ namespace FirmaRest
             services.AddSingleton(mapper);
 
             // Pridanie repozitarov
-            services.AddScoped<EmployeeRepository>();
+            services.AddScoped<IEmployeeRepository,EmployeeRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
