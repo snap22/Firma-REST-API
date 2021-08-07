@@ -9,6 +9,7 @@ using FirmaRest.Models;
 using Microsoft.Data.SqlClient;
 using FirmaRest.Models.DTO;
 using FirmaRest.Repository;
+using FirmaRest.Exceptions;
 
 namespace FirmaRest.Controllers
 {
@@ -34,14 +35,15 @@ namespace FirmaRest.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CompanyDto>> GetCompany(int id)
         {
-            var company = await _repository.GetCompanyById(id);
-
-            if (company == null)
+            try
             {
-                return NotFound();
+                var company = await _repository.GetCompanyById(id);
+                return company;
             }
-
-            return company;
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         // GET: api/Companies/id/Employees
@@ -50,14 +52,30 @@ namespace FirmaRest.Controllers
         [Route("{id}/Employees")]
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployeesOfCompany(int id)
         {
-            var company = await _repository.GetCompanyById(id);
-
-            if (company == null)
+            try
             {
-                return NotFound();
+                return await _repository.GetAllEmployeesInCompany(id);
             }
-
-            return await _repository.GetAllEmployeesInCompany(id);
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }        
+        }
+        
+        // GET: api/Companies/id/Divisions
+        //[HttpGet("{id}")]
+        [HttpGet]
+        [Route("{id}/Divisions")]
+        public async Task<ActionResult<IEnumerable<DivisionDto>>> GetDivisionsOfCompany(int id)
+        {
+            try
+            {
+                return await _repository.GetAllDivisionsInCompany(id);
+            }
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message); ;
+            }
         }
 
         // PUT: api/Companies/5
@@ -66,15 +84,18 @@ namespace FirmaRest.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCompany(int id, CompanyDto companyDto)
         {
-            if (id != companyDto.Id)
+            try
             {
-                return BadRequest();
+                await _repository.UpdateCompany(id, companyDto);
             }
-
-            var company = await _repository.UpdateCompany(id, companyDto);
-
-            if (company == null)
-                return NotFound();
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (EmployeeDifferentCompanyException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return NoContent();
         }
@@ -85,26 +106,34 @@ namespace FirmaRest.Controllers
         [HttpPost]
         public async Task<ActionResult<CompanyDto>> PostCompany(CompanyDto companyDto)
         {
-            var company = await _repository.CreateCompany(companyDto);
-
-            return CreatedAtAction("GetCompany", new { id = company.Value.Id }, company);
+            try
+            {
+                var company = await _repository.CreateCompany(companyDto);
+                return CreatedAtAction(nameof(GetCompany), new { id = company.Value.Id }, company);
+            }
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (EmployeeDifferentCompanyException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/Companies/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<CompanyDto>> DeleteCompany(int id)
         {
-            var company = await _repository.GetCompanyById(id);
-
-            if (company == null)
-                return NotFound();
-
-            return await _repository.DeleteCompany(id);
+            try
+            {
+                return await _repository.DeleteCompany(id);
+            }
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
-
-
-
-        
 
     }
 }
