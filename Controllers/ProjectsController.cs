@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FirmaRest.Models;
+using FirmaRest.Models.DTO;
+using FirmaRest.Repository;
+using FirmaRest.Exceptions;
 
 namespace FirmaRest.Controllers
 {
@@ -13,61 +16,66 @@ namespace FirmaRest.Controllers
     [ApiController]
     public class ProjectsController : ControllerBase
     {
-        private readonly TestDBContext _context;
+        private readonly INodeRepository _repository;
 
-        public ProjectsController(TestDBContext context)
+        public ProjectsController(INodeRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: api/Projects
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Project>>> GetProjects()
+        public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProject()
         {
-            return await _context.Projects.ToListAsync();
+            return await _repository.GetAllProjects();
         }
 
         // GET: api/Projects/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Project>> GetProject(int id)
+        public async Task<ActionResult<ProjectDto>> GetProject(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
-
-            if (project == null)
+            try
             {
-                return NotFound();
+                return await _repository.GetProjectById(id);
             }
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
 
-            return project;
+        // GET: api/Projects/id/Departments
+        [HttpGet]
+        [Route("{id}/Departments")]
+        public async Task<ActionResult<IEnumerable<DepartmentDto>>> GetDepartmentsOfProject(int id)
+        {
+            try
+            {
+                return await _repository.GetAllDepartmentsInProject(id);
+            }
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message); ;
+            }
         }
 
         // PUT: api/Projects/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProject(int id, Project project)
+        public async Task<IActionResult> PutProject(int id, ProjectDto projectDto)
         {
-            if (id != project.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(project).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _repository.UpdateProject(id, projectDto);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (NotExistsException ex)
             {
-                if (!ProjectExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound(ex.Message);
+            }
+            catch (EmployeeDifferentCompanyException ex)
+            {
+                return BadRequest(ex.Message);
             }
 
             return NoContent();
@@ -77,33 +85,36 @@ namespace FirmaRest.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Project>> PostProject(Project project)
+        public async Task<ActionResult<ProjectDto>> PostProject(ProjectDto projectDto)
         {
-            _context.Projects.Add(project);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetProject", new { id = project.Id }, project);
+            try
+            {
+                var project = await _repository.CreateProject(projectDto);
+                return CreatedAtAction(nameof(GetProject), new { id = project.Value.Id }, project);
+            }
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (EmployeeDifferentCompanyException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         // DELETE: api/Projects/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Project>> DeleteProject(int id)
+        public async Task<ActionResult<ProjectDto>> DeleteProject(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
-            if (project == null)
+            try
             {
-                return NotFound();
+                return await _repository.DeleteProject(id);
             }
-
-            _context.Projects.Remove(project);
-            await _context.SaveChangesAsync();
-
-            return project;
-        }
-
-        private bool ProjectExists(int id)
-        {
-            return _context.Projects.Any(e => e.Id == id);
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }
