@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FirmaRest.Repository
 {
-    interface INodeRepository
+    public interface INodeRepository
     {
         public Task<ActionResult<IEnumerable<CompanyDto>>> GetAllCompanies();
         public Task<ActionResult<CompanyDto>> GetCompanyById(int id);
