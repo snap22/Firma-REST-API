@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FirmaRest.Models;
+using FirmaRest.Models.DTO;
+using FirmaRest.Repository;
+using FirmaRest.Exceptions;
 
 namespace FirmaRest.Controllers
 {
@@ -13,61 +16,51 @@ namespace FirmaRest.Controllers
     [ApiController]
     public class DepartmentsController : ControllerBase
     {
-        private readonly TestDBContext _context;
+        private readonly INodeRepository _repository;
 
-        public DepartmentsController(TestDBContext context)
+        public DepartmentsController(INodeRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: api/Departments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Department>>> GetDepartments()
+        public async Task<ActionResult<IEnumerable<DepartmentDto>>> GetDepartment()
         {
-            return await _context.Departments.ToListAsync();
+            return await _repository.GetAllDepartments();
         }
 
         // GET: api/Departments/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Department>> GetDepartment(int id)
+        public async Task<ActionResult<DepartmentDto>> GetDepartment(int id)
         {
-            var department = await _context.Departments.FindAsync(id);
-
-            if (department == null)
+            try
             {
-                return NotFound();
+                return await _repository.GetDepartmentById((id));
             }
-
-            return department;
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         // PUT: api/Departments/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDepartment(int id, Department department)
+        public async Task<IActionResult> PutDepartment(int id, DepartmentDto departmentDto)
         {
-            if (id != department.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(department).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _repository.UpdateDepartment(id, departmentDto);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (NotExistsException ex)
             {
-                if (!DepartmentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound(ex.Message);
+            }
+            catch (EmployeeDifferentCompanyException ex)
+            {
+                return BadRequest(ex.Message);
             }
 
             return NoContent();
@@ -77,33 +70,35 @@ namespace FirmaRest.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Department>> PostDepartment(Department department)
+        public async Task<ActionResult<DepartmentDto>> PostDepartment(DepartmentDto departmentDto)
         {
-            _context.Departments.Add(department);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetDepartment", new { id = department.Id }, department);
+            try
+            {
+                var department = await _repository.CreateDepartment(departmentDto);
+                return CreatedAtAction(nameof(GetDepartment), new { id = department.Value.Id }, department);
+            }
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (EmployeeDifferentCompanyException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/Departments/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Department>> DeleteDepartment(int id)
+        public async Task<ActionResult<DepartmentDto>> DeleteDepartment(int id)
         {
-            var department = await _context.Departments.FindAsync(id);
-            if (department == null)
+            try
             {
-                return NotFound();
+                return await _repository.DeleteDepartment(id);
             }
-
-            _context.Departments.Remove(department);
-            await _context.SaveChangesAsync();
-
-            return department;
-        }
-
-        private bool DepartmentExists(int id)
-        {
-            return _context.Departments.Any(e => e.Id == id);
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }
