@@ -63,7 +63,6 @@ namespace FirmaRest.Controllers
         }
         
         // GET: api/Companies/id/Divisions
-        //[HttpGet("{id}")]
         [HttpGet]
         [Route("{id}/Divisions")]
         public async Task<ActionResult<IEnumerable<DivisionDto>>> GetDivisionsOfCompany(int id)
