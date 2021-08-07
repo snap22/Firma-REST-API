@@ -1,6 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
+
 
 #nullable disable
 
@@ -191,5 +190,9 @@ namespace FirmaRest.Models
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        public DbSet<FirmaRest.Models.DTO.DepartmentDto> DepartmentDto { get; set; }
+
+        public DbSet<FirmaRest.Models.DTO.ProjectDto> ProjectDto { get; set; }
     }
 }
