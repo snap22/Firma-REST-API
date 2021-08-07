@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FirmaRest.Models;
+using FirmaRest.Exceptions;
+using FirmaRest.Repository;
+using FirmaRest.Models.DTO;
 
 namespace FirmaRest.Controllers
 {
@@ -13,61 +16,66 @@ namespace FirmaRest.Controllers
     [ApiController]
     public class DivisionsController : ControllerBase
     {
-        private readonly TestDBContext _context;
+        private readonly INodeRepository _repository;
 
-        public DivisionsController(TestDBContext context)
+        public DivisionsController(INodeRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: api/Divisions
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Division>>> GetDivisions()
+        public async Task<ActionResult<IEnumerable<DivisionDto>>> GetDivisions()
         {
-            return await _context.Divisions.ToListAsync();
+            return await _repository.GetAllDivisions();
         }
 
         // GET: api/Divisions/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Division>> GetDivision(int id)
+        public async Task<ActionResult<DivisionDto>> GetDivision(int id)
         {
-            var division = await _context.Divisions.FindAsync(id);
-
-            if (division == null)
+            try
             {
-                return NotFound();
+                return await _repository.GetDivisionById(id);
             }
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
 
-            return division;
+        // GET: api/Companies/id/Divisions
+        [HttpGet]
+        [Route("{id}/Projects")]
+        public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProjectsOfDivision(int id)
+        {
+            try
+            {
+                return await _repository.GetAllProjectsInDivision(id);
+            }
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message); ;
+            }
         }
 
         // PUT: api/Divisions/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDivision(int id, Division division)
+        public async Task<IActionResult> PutDivision(int id, DivisionDto divisionDto)
         {
-            if (id != division.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(division).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _repository.UpdateDivision(id, divisionDto);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (NotExistsException ex)
             {
-                if (!DivisionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound(ex.Message);
+            }
+            catch (EmployeeDifferentCompanyException ex)
+            {
+                return BadRequest(ex.Message);
             }
 
             return NoContent();
@@ -77,33 +85,36 @@ namespace FirmaRest.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Division>> PostDivision(Division division)
+        public async Task<ActionResult<DivisionDto>> PostDivision(DivisionDto divisionDto)
         {
-            _context.Divisions.Add(division);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetDivision", new { id = division.Id }, division);
+            try
+            {
+                var division = await _repository.CreateDivision(divisionDto);
+                return CreatedAtAction(nameof(GetDivision), new { id = division.Value.Id }, division);
+            }
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (EmployeeDifferentCompanyException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/Divisions/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Division>> DeleteDivision(int id)
+        public async Task<ActionResult<DivisionDto>> DeleteDivision(int id)
         {
-            var division = await _context.Divisions.FindAsync(id);
-            if (division == null)
+            try
             {
-                return NotFound();
+                return await _repository.DeleteDivision(id);
             }
-
-            _context.Divisions.Remove(division);
-            await _context.SaveChangesAsync();
-
-            return division;
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
-        private bool DivisionExists(int id)
-        {
-            return _context.Divisions.Any(e => e.Id == id);
-        }
     }
 }
