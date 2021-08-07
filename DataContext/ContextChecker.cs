@@ -45,6 +45,11 @@ namespace FirmaRest.DataContext
             return _context.Employees.Any(e => e.Id == employeeId && e.CompanyId == companyId);
         }
 
+        public bool EmployeeIsUnemployed(int employeeId)
+        {
+            return _context.Employees.Any(e => e.Id == employeeId && e.CompanyId == null);
+        }
+
         public bool EmployeeIsLeaderOfAnyNode(int employeeId)
         {
             bool isLeader = false;
