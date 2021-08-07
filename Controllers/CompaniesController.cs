@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FirmaRest.Models;
+using Microsoft.Data.SqlClient;
+using FirmaRest.Models.DTO;
+using FirmaRest.Repository;
 
 namespace FirmaRest.Controllers
 {
@@ -13,25 +16,25 @@ namespace FirmaRest.Controllers
     [ApiController]
     public class CompaniesController : ControllerBase
     {
-        private readonly TestDBContext _context;
+        private readonly INodeRepository _repository;
 
-        public CompaniesController(TestDBContext context)
+        public CompaniesController(INodeRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: api/Companies
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Company>>> GetCompanies()
+        public async Task<ActionResult<IEnumerable<CompanyDto>>> GetCompanies()
         {
-            return await _context.Companies.ToListAsync();
+            return await _repository.GetAllCompanies();
         }
 
         // GET: api/Companies/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Company>> GetCompany(int id)
+        public async Task<ActionResult<CompanyDto>> GetCompany(int id)
         {
-            var company = await _context.Companies.FindAsync(id);
+            var company = await _repository.GetCompanyById(id);
 
             if (company == null)
             {
@@ -41,34 +44,37 @@ namespace FirmaRest.Controllers
             return company;
         }
 
+        // GET: api/Companies/id/Employees
+        //[HttpGet("{id}")]
+        [HttpGet]
+        [Route("{id}/Employees")]
+        public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployeesOfCompany(int id)
+        {
+            var company = await _repository.GetCompanyById(id);
+
+            if (company == null)
+            {
+                return NotFound();
+            }
+
+            return await _repository.GetAllEmployeesInCompany(id);
+        }
+
         // PUT: api/Companies/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCompany(int id, Company company)
+        public async Task<IActionResult> PutCompany(int id, CompanyDto companyDto)
         {
-            if (id != company.Id)
+            if (id != companyDto.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(company).State = EntityState.Modified;
+            var company = await _repository.UpdateCompany(id, companyDto);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CompanyExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (company == null)
+                return NotFound();
 
             return NoContent();
         }
@@ -77,33 +83,28 @@ namespace FirmaRest.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Company>> PostCompany(Company company)
+        public async Task<ActionResult<CompanyDto>> PostCompany(CompanyDto companyDto)
         {
-            _context.Companies.Add(company);
-            await _context.SaveChangesAsync();
+            var company = await _repository.CreateCompany(companyDto);
 
-            return CreatedAtAction("GetCompany", new { id = company.Id }, company);
+            return CreatedAtAction("GetCompany", new { id = company.Value.Id }, company);
         }
 
         // DELETE: api/Companies/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Company>> DeleteCompany(int id)
+        public async Task<ActionResult<CompanyDto>> DeleteCompany(int id)
         {
-            var company = await _context.Companies.FindAsync(id);
+            var company = await _repository.GetCompanyById(id);
+
             if (company == null)
-            {
                 return NotFound();
-            }
 
-            _context.Companies.Remove(company);
-            await _context.SaveChangesAsync();
-
-            return company;
+            return await _repository.DeleteCompany(id);
         }
 
-        private bool CompanyExists(int id)
-        {
-            return _context.Companies.Any(e => e.Id == id);
-        }
+
+
+        
+
     }
 }
