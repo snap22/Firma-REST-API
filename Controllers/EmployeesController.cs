@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using FirmaRest.Models;
 using FirmaRest.Repository;
+using FirmaRest.Models.DTO;
+using FirmaRest.Exceptions;
 
 namespace FirmaRest.Controllers
 {
@@ -33,14 +34,14 @@ namespace FirmaRest.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<EmployeeDto>> GetEmployee(int id)
         {
-            var employee = await _repository.GetEmployeeById(id);
-
-            if (employee == null)
+            try
             {
-                return NotFound();
+                return await _repository.GetEmployeeById(id);
             }
-
-            return employee;
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         // GET: api/Employees/Unemployed
@@ -57,36 +58,19 @@ namespace FirmaRest.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployee(int id, EmployeeDto employeeDto)
         {
-            if (id != employeeDto.Id)
+            try
             {
-                return BadRequest();
+                await _repository.UpdateEmployee(id, employeeDto);
+                return NoContent();
             }
-
-            var employee = await _repository.GetEmployeeById(id);
-            if (employee == null)
+            catch (NotExistsException ex)
             {
-                return NotFound();
+                return NotFound(ex.Message);
             }
-
-            await _repository.UpdateEmployee(id, employeeDto);
-
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!EmployeeExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
-
-            return NoContent();
+            catch (EmployeeDifferentCompanyException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST: api/Employees
@@ -95,35 +79,33 @@ namespace FirmaRest.Controllers
         [HttpPost]
         public async Task<ActionResult<EmployeeDto>> PostEmployee(EmployeeDto employeeDto)
         {
-
-            var employee = await _repository.CreateEmployee(employeeDto);
-
-
-            //return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
-            return CreatedAtAction(nameof(GetEmployee), new { id = employee.Value.Id }, employee);
+            try
+            {
+                var employee = await _repository.CreateEmployee(employeeDto);
+                return CreatedAtAction(nameof(GetEmployee), new { id = employee.Value.Id }, employee);
+            }
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (EmployeeDifferentCompanyException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/Employees/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<EmployeeDto>> DeleteEmployee(int id)
         {
-            var employee = await _repository.GetEmployeeById(id);
-            if (employee == null)
+            try
             {
-                return NotFound();
+                return await _repository.DeleteEmployee(id);
             }
-
-            var deletedEmployee = await _repository.DeleteEmployee(id);
-
-            return deletedEmployee;
+            catch (NotExistsException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
-
-        
-
-        
-
-        
-
-
     }
 }
