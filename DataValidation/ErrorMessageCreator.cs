@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FirmaRest.Exceptions
+namespace FirmaRest.DataValidation
 {
-    public class ExceptionMessageCreator
+    public class ErrorMessageCreator
     {
         public string CreateNotExistsMessage(string name, int id)
         {
@@ -40,6 +40,16 @@ namespace FirmaRest.Exceptions
         public string CreateEmployeeDifferentCompanyMessage()
         {
             return "Employee is from a different company";
+        }
+
+        public string CreateEmployeeCannotBeDeletedMessage(int employeeId)
+        {
+            return string.Format("Employee id: {0} cannot be deleted, because he is the leader of at least one node.", employeeId);
+        }
+
+        internal string CreateEmployeeCannotBeModifiedMessage(int employeeId)
+        {
+            return string.Format("Cannot change the company of employee with id: {0}, because he is the leader of at least one node.", employeeId);
         }
     }
 }
