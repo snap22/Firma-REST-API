@@ -88,10 +88,6 @@ namespace FirmaRest.Controllers
             {
                 return NotFound(ex.Message);
             }
-            catch (EmployeeDifferentCompanyException ex)
-            {
-                return BadRequest(ex.Message);
-            }
         }
 
         // DELETE: api/Employees/5
@@ -105,6 +101,10 @@ namespace FirmaRest.Controllers
             catch (NotExistsException ex)
             {
                 return NotFound(ex.Message);
+            }
+            catch (CannotDeleteException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }
