@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using FirmaRest.DataValidation;
+using FirmaRest.Exceptions;
 using FirmaRest.Models;
 using FirmaRest.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +16,17 @@ namespace FirmaRest.Repository
     {
         private readonly TestDBContext _context;
         private readonly IMapper _mapper;
+        private readonly ErrorRaiser _errorRaiser;
 
         public EmployeeRepository(TestDBContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
+            _errorRaiser = new ErrorRaiser(context);
         }
+
+
+        
 
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetAllEmployees()
         {
@@ -29,6 +36,8 @@ namespace FirmaRest.Repository
         }
         public async Task<ActionResult<EmployeeDto>> GetEmployeeById(int id)
         {
+            _errorRaiser.RaiseErrorIfEmployeeDoesntExist(id);
+
             var employee = await _context.Employees.FindAsync(id);
             return _mapper.Map<EmployeeDto>(employee);
         }
@@ -50,7 +59,14 @@ namespace FirmaRest.Repository
         }
         public async Task<ActionResult<EmployeeDto>> UpdateEmployee(int id, EmployeeDto employeeDto)
         {
+            _errorRaiser.RaiseErrorIfEmployeeDoesntExist(id);
+
             var employee = await _context.Employees.FindAsync(id);
+
+            if (employeeDto.CompanyId != employee.CompanyId)
+            {
+                _errorRaiser.RaiseErrorIfEmployeeLeaderOfAnyNode(id, toDelete: false);
+            }
 
             _mapper.Map(employeeDto, employee);
             await _context.SaveChangesAsync();
@@ -59,7 +75,11 @@ namespace FirmaRest.Repository
         }
         public async Task<ActionResult<EmployeeDto>> DeleteEmployee(int id)
         {
+            _errorRaiser.RaiseErrorIfEmployeeDoesntExist(id);
+
             var employee = await _context.Employees.FindAsync(id);
+
+            _errorRaiser.RaiseErrorIfEmployeeLeaderOfAnyNode(id, toDelete: true);
 
             _context.Employees.Remove(employee);
             await _context.SaveChangesAsync();
