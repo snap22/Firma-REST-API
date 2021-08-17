@@ -14,11 +14,11 @@ namespace FirmaRest.Repository
 {
     public class EmployeeRepository : IEmployeeRepository
     {
-        private readonly TestDBContext _context;
+        private readonly RestDBContext _context;
         private readonly IMapper _mapper;
         private readonly ErrorRaiser _errorRaiser;
 
-        public EmployeeRepository(TestDBContext context, IMapper mapper)
+        public EmployeeRepository(RestDBContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

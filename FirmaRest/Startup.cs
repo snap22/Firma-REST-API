@@ -35,7 +35,7 @@ namespace FirmaRest
             services.AddSwaggerGen();
 
             // Pridanie databazy
-            services.AddDbContext<TestDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
+            services.AddDbContext<RestDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
 
             // Pridanie AutoMappera
             var mapperConfig = new MapperConfiguration(mc =>

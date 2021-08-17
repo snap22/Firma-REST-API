@@ -8,9 +8,9 @@ namespace FirmaRest.DataValidation
 {
     public class ContextChecker
     {
-        private readonly TestDBContext _context;
+        private readonly RestDBContext _context;
 
-        public ContextChecker(TestDBContext context)
+        public ContextChecker(RestDBContext context)
         {
             _context = context;
         }

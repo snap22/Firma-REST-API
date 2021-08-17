@@ -14,11 +14,11 @@ namespace FirmaRest.Repository
 {
     public class NodeRepository : INodeRepository
     {
-        private readonly TestDBContext _context;
+        private readonly RestDBContext _context;
         private readonly IMapper _mapper;
         private readonly ErrorRaiser _errorRaiser;
 
-        public NodeRepository(TestDBContext context, IMapper mapper)
+        public NodeRepository(RestDBContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

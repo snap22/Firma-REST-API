@@ -5,14 +5,14 @@
 
 namespace FirmaRest.Models
 {
-    public partial class TestDBContext : DbContext
+    public partial class RestDBContext : DbContext
     {
 
-        public TestDBContext()
+        public RestDBContext()
         {
         }
 
-        public TestDBContext(DbContextOptions<TestDBContext> options)
+        public RestDBContext(DbContextOptions<RestDBContext> options)
             : base(options)
         {
         }

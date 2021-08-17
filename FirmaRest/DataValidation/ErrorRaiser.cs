@@ -12,7 +12,7 @@ namespace FirmaRest.DataValidation
         private readonly ContextChecker _checker;
         private readonly ErrorMessageCreator _messageCreator;
 
-        public ErrorRaiser(TestDBContext context)
+        public ErrorRaiser(RestDBContext context)
         {
             _checker = new ContextChecker(context);
             _messageCreator = new ErrorMessageCreator();
