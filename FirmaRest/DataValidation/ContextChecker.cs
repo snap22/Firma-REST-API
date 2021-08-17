@@ -40,6 +40,26 @@ namespace FirmaRest.DataValidation
             return _context.Departments.Any(e => e.Id == id);
         }
 
+        public bool CompanyCodeExists(string code)
+        {
+            return _context.Companies.Any(e => e.Code == code);
+        }
+
+        public bool DivisionCodeExists(string code)
+        {
+            return _context.Divisions.Any(e => e.Code == code);
+        }
+
+        public bool ProjectCodeExists(string code)
+        {
+            return _context.Projects.Any(e => e.Code == code);
+        }
+
+        public bool DepartmentCodeExists(string code)
+        {
+            return _context.Departments.Any(e => e.Code == code);
+        }
+
         public bool EmployeeInTheCompany(int employeeId, int companyId)
         {
             return _context.Employees.Any(e => e.Id == employeeId && e.CompanyId == companyId);
@@ -50,12 +70,17 @@ namespace FirmaRest.DataValidation
             return _context.Employees.Any(e => e.Id == employeeId && e.CompanyId == null);
         }
 
+        public bool EmplyeeEmailExists(string employeeEmail)
+        {
+            return _context.Employees.Any(e => e.Email == employeeEmail);
+        }
+
         public bool EmployeeIsLeaderOfAnyNode(int employeeId)
         {
             bool isLeader = false;
             // ak je nezamestnany, ihned vyhodi false
-            if (_context.Employees.Any(e => e.Id == employeeId && e.CompanyId == null))
-                return isLeader;
+            if (EmployeeIsUnemployed(employeeId))
+                return false;
 
             isLeader |= _context.Companies.Any(c => c.Director == employeeId);
             isLeader |= _context.Divisions.Any(d => d.Leader == employeeId);
