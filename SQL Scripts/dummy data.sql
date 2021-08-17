@@ -1,4 +1,4 @@
-USE TestDB2;
+USE RestDB;
 
 GO
 CREATE TABLE help_title
@@ -41,31 +41,31 @@ END;
 
 --	***	RESET INDEXOV ***
 GO
-DBCC CHECKIDENT ('Company', RESEED, 0);
-DBCC CHECKIDENT ('Employee', RESEED, 0);
-DBCC CHECKIDENT ('Division', RESEED, 0);
-DBCC CHECKIDENT ('Project', RESEED, 0);
-DBCC CHECKIDENT ('Department', RESEED, 0);
+--DBCC CHECKIDENT ('Company', RESEED, 0);
+--DBCC CHECKIDENT ('Employee', RESEED, 0);
+--DBCC CHECKIDENT ('Division', RESEED, 0);
+--DBCC CHECKIDENT ('Project', RESEED, 0);
+--DBCC CHECKIDENT ('Department', RESEED, 0);
 GO
 
 -- FIRMA 1 - EvilWorks
 
-EXEC TestDB2.dbo.help_create_employee 'Carmel', 'Parks';	-- 1
-
+EXEC RestDB.dbo.help_create_employee 'Carmel', 'Parks';	-- 1
+GO
 
 INSERT INTO Company (Title, Code, Director)
 	VALUES ( 'EvilWorks', 'AAA1', 1);	-- 1
 
 -- FIRMA 1 - ZAMESTNANCI (Id 2 až 9)
 
-EXEC TestDB2.dbo.help_create_employee 'Lily', 'Conroy', 1;
-EXEC TestDB2.dbo.help_create_employee 'Becky ', 'Dunn', 1;
-EXEC TestDB2.dbo.help_create_employee 'Dedalus', 'Clearwater', 1;
-EXEC TestDB2.dbo.help_create_employee 'Jimmy', 'Jigger', 1;
-EXEC TestDB2.dbo.help_create_employee 'Albus', 'Diggory', 1;
-EXEC TestDB2.dbo.help_create_employee 'Jean', 'Rosier', 1;
-EXEC TestDB2.dbo.help_create_employee 'Jimmy', 'Pomfrey', 1;
-EXEC TestDB2.dbo.help_create_employee 'Daisy', 'Bagnold', 1;	-- 9
+EXEC RestDB.dbo.help_create_employee 'Lily', 'Conroy', 1;
+EXEC RestDB.dbo.help_create_employee 'Becky ', 'Dunn', 1;
+EXEC RestDB.dbo.help_create_employee 'Dedalus', 'Clearwater', 1;
+EXEC RestDB.dbo.help_create_employee 'Jimmy', 'Jigger', 1;
+EXEC RestDB.dbo.help_create_employee 'Albus', 'Diggory', 1;
+EXEC RestDB.dbo.help_create_employee 'Jean', 'Rosier', 1;
+EXEC RestDB.dbo.help_create_employee 'Jimmy', 'Pomfrey', 1;
+EXEC RestDB.dbo.help_create_employee 'Daisy', 'Bagnold', 1;	-- 9
 
 -- FIRMA 1 - DIVIZIE
 INSERT INTO Division (Title, Code, CompanyId, Leader)
@@ -88,17 +88,17 @@ INSERT INTO Department(Title, Code, ProjectId, Leader)
 
 
 -- FIRMA 2 - Goodify
-EXEC TestDB2.dbo.help_create_employee 'Ema', 'Dolan';	-- 10
+EXEC RestDB.dbo.help_create_employee 'Ema', 'Dolan';	-- 10
 
 INSERT INTO Company (Title, Code, Director)
 	VALUES ( 'Goodify', 'AAA2', 10);	-- 2
 
 -- FIRMA 2 - ZAMESTNANCI (Id 11 až 15)
-EXEC TestDB2.dbo.help_create_employee 'Brandan', 'Bender', 2;
-EXEC TestDB2.dbo.help_create_employee 'Vicky', 'Dunn', 2;
-EXEC TestDB2.dbo.help_create_employee 'Jacky', 'Dunn', 2;
-EXEC TestDB2.dbo.help_create_employee 'Harrison', 'Jones', 2;
-EXEC TestDB2.dbo.help_create_employee 'Merlin', 'Matin', 2;
+EXEC RestDB.dbo.help_create_employee 'Brandan', 'Bender', 2;
+EXEC RestDB.dbo.help_create_employee 'Vicky', 'Dunn', 2;
+EXEC RestDB.dbo.help_create_employee 'Jacky', 'Dunn', 2;
+EXEC RestDB.dbo.help_create_employee 'Harrison', 'Jones', 2;
+EXEC RestDB.dbo.help_create_employee 'Merlin', 'Matin', 2;
 
 -- FIRMA 2 - DIVIZIE
 INSERT INTO Division (Title, Code, CompanyId, Leader)
@@ -119,13 +119,14 @@ INSERT INTO Department(Title, Code, ProjectId, Leader)
 
 
 -- NEZAMESTNANI (Id 16 až 20)
-EXEC TestDB2.dbo.help_create_employee 'Henry', 'Porter';
-EXEC TestDB2.dbo.help_create_employee 'Donald', 'Beasley';
-EXEC TestDB2.dbo.help_create_employee 'Veronica', 'Ginger';
-EXEC TestDB2.dbo.help_create_employee 'Rufus', 'Bagrid';
-EXEC TestDB2.dbo.help_create_employee 'Darius', 'Bigheaded';
+EXEC RestDB.dbo.help_create_employee 'Henry', 'Porter';
+EXEC RestDB.dbo.help_create_employee 'Donald', 'Beasley';
+EXEC RestDB.dbo.help_create_employee 'Veronica', 'Ginger';
+EXEC RestDB.dbo.help_create_employee 'Rufus', 'Bagrid';
+EXEC RestDB.dbo.help_create_employee 'Darius', 'Bigheaded';
 GO
 
 -- vymazanie pomocnych objektov
 DROP PROCEDURE help_create_employee;
-DROP TABLE TestDB2.dbo.help_title;
+DROP TABLE RestDB.dbo.help_title;
+
