@@ -47,9 +47,24 @@ namespace FirmaRest.DataValidation
             return string.Format("Employee id: {0} cannot be deleted, because he is the leader of at least one node.", employeeId);
         }
 
-        internal string CreateEmployeeCannotBeModifiedMessage(int employeeId)
+        public string CreateEmployeeCannotBeModifiedMessage(int employeeId)
         {
             return string.Format("Cannot change the company of employee with id: {0}, because he is the leader of at least one node.", employeeId);
+        }
+
+        public string CreateAlreadyUsedMessage(string type, string value)
+        {
+            return string.Format("{0}: {1} is already used", type, value);
+        }
+
+        public string CreateEmailAlreadyUsedMessage(string employeeEmail)
+        {
+            return CreateAlreadyUsedMessage("Email", employeeEmail);
+        }
+
+        public string CreateCodeAlreadyUsedMessage(string code)
+        {
+            return CreateAlreadyUsedMessage("Code", code);
         }
     }
 }
