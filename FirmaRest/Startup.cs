@@ -6,6 +6,7 @@ using AutoMapper;
 using FirmaRest.DataValidation.Filters;
 using FirmaRest.Models;
 using FirmaRest.Repository;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,6 +25,7 @@ namespace FirmaRest
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            ValidatorOptions.Global.LanguageManager.Enabled = false;    // fluent validation prejde do anglictiny
         }
 
         public IConfiguration Configuration { get; }
