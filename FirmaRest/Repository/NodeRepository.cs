@@ -65,6 +65,7 @@ namespace FirmaRest.Repository
         {
             _errorRaiser.RaiseErrorIfEmployeeDoesntExist(companyDto.Director);
             _errorRaiser.RaiseErrorIfEmployeeNotUnemployed(companyDto.Director);
+            _errorRaiser.RaiseErrorIfCompanyCodeAlreadyInUse(companyDto.Code);
 
             var company = _mapper.Map<Company>(companyDto);
 
@@ -84,6 +85,11 @@ namespace FirmaRest.Repository
             {
                 _errorRaiser.RaiseErrorIfEmployeeDoesntExist(companyDto.Director);
                 _errorRaiser.RaiseErrorIfEmployeeNotInTheCompany(companyDto.Director, companyDto.Id);
+            }
+
+            if (company.Code != companyDto.Code)
+            {
+                _errorRaiser.RaiseErrorIfCompanyCodeAlreadyInUse(companyDto.Code);
             }
 
             _mapper.Map(companyDto, company);
@@ -142,6 +148,7 @@ namespace FirmaRest.Repository
         public async Task<ActionResult<DivisionDto>> CreateDivision(DivisionDto divisionDto)
         {
             _errorRaiser.RaiseErrorIfCompanyDoesntExist(divisionDto.CompanyId);
+            _errorRaiser.RaiseErrorIfDivisionCodeAlreadyInUse(divisionDto.Code);
             _errorRaiser.RaiseErrorIfEmployeeDoesntExist(divisionDto.Leader);
             _errorRaiser.RaiseErrorIfEmployeeNotInTheCompany(divisionDto.Leader, divisionDto.CompanyId);
 
@@ -168,6 +175,11 @@ namespace FirmaRest.Repository
             {
                 _errorRaiser.RaiseErrorIfEmployeeDoesntExist(divisionDto.Leader);
                 _errorRaiser.RaiseErrorIfEmployeeNotInTheCompany(divisionDto.Leader, divisionDto.CompanyId);
+            }
+
+            if (division.Code != divisionDto.Code)
+            {
+                _errorRaiser.RaiseErrorIfDivisionCodeAlreadyInUse(divisionDto.Code);
             }
 
             _mapper.Map(divisionDto, division);
@@ -219,9 +231,11 @@ namespace FirmaRest.Repository
         public async Task<ActionResult<ProjectDto>> CreateProject(ProjectDto projectDto)
         {
             _errorRaiser.RaiseErrorIfDivisionDoesntExist(projectDto.DivisionId);
+            _errorRaiser.RaiseErrortIfProjecCodeAlreadyInUse(projectDto.Code);
             var division = await _context.Divisions.FindAsync(projectDto.DivisionId);
             _errorRaiser.RaiseErrorIfEmployeeDoesntExist(projectDto.Leader);
             _errorRaiser.RaiseErrorIfEmployeeNotInTheCompany(projectDto.Leader, division.CompanyId);
+            
 
             var project = _mapper.Map<Project>(projectDto);
 
@@ -246,6 +260,11 @@ namespace FirmaRest.Repository
             {
                 _errorRaiser.RaiseErrorIfEmployeeDoesntExist(projectDto.Leader);
                 _errorRaiser.RaiseErrorIfEmployeeNotInTheCompany(projectDto.Leader, GetCompanyIdFromProject(projectDto));
+            }
+
+            if (project.Code != projectDto.Code)
+            {
+                _errorRaiser.RaiseErrortIfProjecCodeAlreadyInUse(projectDto.Code);
             }
 
             _mapper.Map(projectDto, project);
@@ -296,6 +315,7 @@ namespace FirmaRest.Repository
         }
         public async Task<ActionResult<DepartmentDto>> CreateDepartment(DepartmentDto departmentDto)
         {
+            _errorRaiser.RaiseErrorIfDepartmentCodeAlreadyInUse(departmentDto.Code);
             _errorRaiser.RaiseErrorIfProjectDoesntExist(departmentDto.ProjectId);
             _errorRaiser.RaiseErrorIfEmployeeDoesntExist(departmentDto.Leader);
             _errorRaiser.RaiseErrorIfEmployeeNotInTheCompany(departmentDto.Leader, GetCompanyIdFromDepartment(departmentDto));
@@ -323,6 +343,11 @@ namespace FirmaRest.Repository
             {
                 _errorRaiser.RaiseErrorIfEmployeeDoesntExist(departmentDto.Leader);
                 _errorRaiser.RaiseErrorIfEmployeeNotInTheCompany(departmentDto.Leader, GetCompanyIdFromDepartment(departmentDto));
+            }
+
+            if (department.Code != departmentDto.Code)
+            {
+                _errorRaiser.RaiseErrorIfDepartmentCodeAlreadyInUse(departmentDto.Code);
             }
 
             _mapper.Map(departmentDto, department);

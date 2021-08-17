@@ -50,6 +50,7 @@ namespace FirmaRest.Repository
             var employee = _mapper.Map<Employee>(employeeDto);
 
             _errorRaiser.RaiseErrorIfCompanyDoesntExist(employeeDto.CompanyId.Value);
+            _errorRaiser.RaiseErrorIfEmployeeEmailAlreadyInUse(employeeDto.Email);
 
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
@@ -66,6 +67,11 @@ namespace FirmaRest.Repository
             {
                 _errorRaiser.RaiseErrorIfEmployeeLeaderOfAnyNode(id, toDelete: false);
                 _errorRaiser.RaiseErrorIfCompanyDoesntExist(employeeDto.CompanyId);
+            }
+
+            if (employee.Email != employeeDto.Email)
+            {
+                _errorRaiser.RaiseErrorIfEmployeeEmailAlreadyInUse(employeeDto.Email);
             }
 
             _mapper.Map(employeeDto, employee);
