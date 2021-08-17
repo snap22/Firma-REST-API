@@ -35,10 +35,10 @@ namespace FirmaRest.DataValidation
             }
         }
 
-        public void RaiseErrorIfCompanyDoesntExist(int companyId)
+        public void RaiseErrorIfCompanyDoesntExist(int? companyId)
         {
-            if (!_checker.CompanyExists(companyId))
-                throw new NotExistsException(_messageCreator.CreateCompanyNotExistsMessage(companyId));
+            if (companyId != null && !_checker.CompanyExists(companyId.Value))
+                throw new NotExistsException(_messageCreator.CreateCompanyNotExistsMessage(companyId.Value));
         }
 
         public void RaiseErrorIfDivisionDoesntExist(int divisionId)
