@@ -49,7 +49,7 @@ namespace FirmaRest.Repository
         {
             var employee = _mapper.Map<Employee>(employeeDto);
 
-            _errorRaiser.RaiseErrorIfCompanyDoesntExist(employeeDto.CompanyId.Value);
+            _errorRaiser.RaiseErrorIfCompanyDoesntExist(employeeDto.CompanyId);
             _errorRaiser.RaiseErrorIfEmployeeEmailAlreadyInUse(employeeDto.Email);
 
             _context.Employees.Add(employee);
