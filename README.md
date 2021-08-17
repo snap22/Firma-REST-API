@@ -4,10 +4,11 @@
 1. Stiahnutie projektu ([zip verzia](https://github.com/snap22/Firma-REST-API/archive/refs/heads/master.zip))
 2. Vytvorenie databázy (spustenie skriptu v [SQL Scripts/database creation.sql](SQL%20Scripts/database%20creation.sql)
    - *pozn. databáza by sa mala volať RestDB, pretože tak je to nastavené aj v [nastaveniach projektu](FirmaRest/appsettings.json)*
+   - *pozn. databáza beží na lokálnom **SQLExpress** serveri*
 3. (Voliteľné) Vygenerovanie dummy data pre databázu (spustenie skriptu [SQL Scripts/dummy data.sql](SQL%20Scripts/dummy%20data.sql))
 4. Spustenie **FirmaRest.sln** v priečinku [FirmaRest](FirmaRest/)
 
-Po spustení projektu bude stránka behať na  https://localhost:44390
+Stránka sa nachádza na https://localhost:44390
 <br/> <br/>
 
 
