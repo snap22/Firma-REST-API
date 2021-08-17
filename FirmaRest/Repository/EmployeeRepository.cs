@@ -25,9 +25,6 @@ namespace FirmaRest.Repository
             _errorRaiser = new ErrorRaiser(context);
         }
 
-
-        
-
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetAllEmployees()
         {
             return await _context.Employees
@@ -51,7 +48,9 @@ namespace FirmaRest.Repository
         public async Task<ActionResult<EmployeeDto>> CreateEmployee(EmployeeDto employeeDto)
         {
             var employee = _mapper.Map<Employee>(employeeDto);
-            
+
+            _errorRaiser.RaiseErrorIfCompanyDoesntExist(employeeDto.CompanyId.Value);
+
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
             
@@ -66,6 +65,7 @@ namespace FirmaRest.Repository
             if (employeeDto.CompanyId != employee.CompanyId)
             {
                 _errorRaiser.RaiseErrorIfEmployeeLeaderOfAnyNode(id, toDelete: false);
+                _errorRaiser.RaiseErrorIfCompanyDoesntExist(employeeDto.CompanyId);
             }
 
             _mapper.Map(employeeDto, employee);
