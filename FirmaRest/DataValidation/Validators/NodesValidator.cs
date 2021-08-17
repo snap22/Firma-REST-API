@@ -19,11 +19,11 @@ namespace FirmaRest.DataValidation.Validators
 
             RuleFor(c => c.Code)
                 .Length(4)
-                .Matches("[a-zA-Z0-9,.]{4}");
+                .Matches("[a-zA-Z0-9,.]{4}")
+                .NotNull();
 
             RuleFor(c => c.Director)
-                .NotNull()
-                .NotEmpty();
+                .NotNull();
         }
     }
 
@@ -39,15 +39,15 @@ namespace FirmaRest.DataValidation.Validators
 
             RuleFor(d => d.Code)
                 .Length(4)
-                .Matches("[a-zA-Z0-9,.]{4}");
+                .Matches("[a-zA-Z0-9,.]{4}")
+                .NotNull();
 
             RuleFor(d => d.CompanyId)
                 .NotNull()
                 .NotEmpty();
 
             RuleFor(d => d.Leader)
-                .NotNull()
-                .NotEmpty();
+                .NotNull();
         }
     }
 
@@ -63,15 +63,15 @@ namespace FirmaRest.DataValidation.Validators
 
             RuleFor(p => p.Code)
                 .Length(4)
-                .Matches("[a-zA-Z0-9,.]{4}");
+                .Matches("[a-zA-Z0-9,.]{4}")
+                .NotNull();
 
             RuleFor(p => p.DivisionId)
                 .NotNull()
                 .NotEmpty();
 
             RuleFor(p => p.Leader)
-                .NotNull()
-                .NotEmpty();
+                .NotNull();
         }
     }
 
@@ -86,15 +86,15 @@ namespace FirmaRest.DataValidation.Validators
 
             RuleFor(d => d.Code)
                 .Length(4)
-                .Matches("[a-zA-Z0-9,.]{4}");
+                .Matches("[a-zA-Z0-9,.]{4}")
+                .NotNull();
 
             RuleFor(d => d.ProjectId)
                 .NotNull()
                 .NotEmpty();
 
             RuleFor(d => d.Leader)
-                .NotNull()
-                .NotEmpty();
+                .NotNull();
         }
     }
 }

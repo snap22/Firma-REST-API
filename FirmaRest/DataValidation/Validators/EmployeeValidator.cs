@@ -31,7 +31,7 @@ namespace FirmaRest.DataValidation.Validators
             RuleFor(e => e.Contact)
                 .NotEmpty()
                 .NotNull()
-                .Matches(@"^[+]?\d{10,}$")
+                .Matches(@"^[+]?\d{10,}$").WithMessage("'{PropertyName}' must be only numeric with an optional leading '+' sign.")
                 .MaximumLength(15);
         }
     }
