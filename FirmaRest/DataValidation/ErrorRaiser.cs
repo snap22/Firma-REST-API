@@ -69,5 +69,34 @@ namespace FirmaRest.DataValidation
                 throw new EmployeeDifferentCompanyException(_messageCreator.CreateEmployeeDifferentCompanyMessage());
         }
 
+        public void RaiseErrorIfEmployeeEmailAlreadyInUse(string employeeEmail)
+        {
+            if (_checker.EmplyeeEmailExists(employeeEmail))
+                throw new AlreadyUsedException(_messageCreator.CreateEmailAlreadyUsedMessage(employeeEmail));
+        }
+
+        public void RaiseErrorIfCompanyCodeAlreadyInUse(string code)
+        {
+            if (_checker.CompanyCodeExists(code))
+                throw new AlreadyUsedException(_messageCreator.CreateCodeAlreadyUsedMessage(code));
+        }
+
+        public void RaiseErrorIfDivisionCodeAlreadyInUse(string code)
+        {
+            if (_checker.DivisionCodeExists(code))
+                throw new AlreadyUsedException(_messageCreator.CreateCodeAlreadyUsedMessage(code));
+        }
+
+        public void RaiseErrortIfProjecCodeAlreadyInUse(string code)
+        {
+            if (_checker.ProjectCodeExists(code))
+                throw new AlreadyUsedException(_messageCreator.CreateCodeAlreadyUsedMessage(code));
+        }
+
+        public void RaiseErrorIfDepartmentCodeAlreadyInUse(string code)
+        {
+            if (_checker.DepartmentCodeExists(code))
+                throw new AlreadyUsedException(_messageCreator.CreateCodeAlreadyUsedMessage(code));
+        }
     }
 }
