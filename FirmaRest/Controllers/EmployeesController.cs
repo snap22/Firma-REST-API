@@ -71,6 +71,10 @@ namespace FirmaRest.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            catch (AlreadyUsedException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST: api/Employees
@@ -87,6 +91,10 @@ namespace FirmaRest.Controllers
             catch (NotExistsException ex)
             {
                 return NotFound(ex.Message);
+            }
+            catch (AlreadyUsedException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 

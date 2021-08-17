@@ -62,6 +62,10 @@ namespace FirmaRest.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            catch (AlreadyUsedException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return NoContent();
         }
@@ -82,6 +86,10 @@ namespace FirmaRest.Controllers
                 return NotFound(ex.Message);
             }
             catch (EmployeeDifferentCompanyException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (AlreadyUsedException ex)
             {
                 return BadRequest(ex.Message);
             }

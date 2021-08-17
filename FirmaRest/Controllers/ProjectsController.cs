@@ -77,6 +77,10 @@ namespace FirmaRest.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            catch (AlreadyUsedException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return NoContent();
         }
@@ -100,7 +104,10 @@ namespace FirmaRest.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            
+            catch (AlreadyUsedException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/Projects/5
